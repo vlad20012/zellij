@@ -3937,26 +3937,12 @@ impl Tab {
             .with_context(err_context)?
         {
             if pane.pid() == active_pane_id {
-                let relative_position = pane.relative_position(&absolute_position);
-                let mut event_for_pane = event.clone();
-                event_for_pane.position = relative_position;
-                if let Some(mouse_event) = pane.mouse_event(&event_for_pane, client_id) {
-                    if !pane.position_is_on_frame(&absolute_position) {
-                        self.write_to_active_terminal(
-                            &None,
-                            mouse_event.into_bytes(),
-                            false,
-                            client_id,
-                        )
-                        .with_context(err_context)?;
-                    }
-                }
                 self.mouse_hover_pane_id.remove(&client_id);
-            } else {
-                let pane_id = pane.pid();
-                if self.advanced_mouse_actions {
-                    self.mouse_hover_pane_id.insert(client_id, pane_id);
-                }
+            }
+
+            let pane_id = pane.pid();
+            if self.advanced_mouse_actions {
+                self.mouse_hover_pane_id.insert(client_id, pane_id);
             }
         };
         Ok(MouseEffect::leave_clipboard_message())
